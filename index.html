@@ -14,25 +14,21 @@
   --maxw:1320px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
 
-/* Root Container Settings */
 html, body{
-  height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
   background: #fff;
   font-family: 'Noto Sans', Arial, sans-serif;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Enable Container Queries so layout adapts to iframe size rather than screen size */
 body {
   container-type: inline-size;
   container-name: app-container;
+  overflow: hidden;
 }
 
 button{font-family:inherit;cursor:pointer;border:none;background:none;}
@@ -42,10 +38,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
 .screen{
   display: none;
   flex-direction: column;
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
   position: relative;
+  width: 100%;
 }
 .screen.is-active{display:flex;}
 
@@ -83,12 +77,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
 }
 
 /* ── COVER ── */
-#cover{overflow:hidden;}
 .cover-stage{
   position:relative;width:100%;max-width:var(--maxw);margin:0 auto;
   flex:1;display:flex;align-items:center;
-  padding:clamp(12px,2cqw,32px) clamp(18px,4cqw,52px);
-  overflow:hidden;
+  padding:clamp(20px,3cqw,40px) clamp(18px,4cqw,52px);
+  min-height: 400px;
 }
 .cover-text{position:relative;z-index:5;max-width:clamp(280px,45cqw,520px);}
 .cover-title{font-size:clamp(24px,3.8cqw,44px);font-weight:800;
@@ -136,10 +129,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
 /* ── INTRO & EVENT CONTENT AREA ── */
 .work-outer{
   flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
 }
@@ -153,12 +142,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
   flex: 1 1 auto;
   justify-content: center;
 }
-#intro .work-inner{padding-top:clamp(12px, 2cqw, 28px);}
 
 /* ── INTRO: S-curve panel ── */
 .intro-body{
   position:relative;display:flex;align-items:center;
-  min-height:clamp(180px, 30cqw, 280px);flex:1;
+  min-height:clamp(200px, 28cqw, 300px);flex:1;
 }
 .intro-copy{position:relative;z-index:2;max-width:clamp(260px,44cqw,480px);}
 .intro-copy p{
@@ -320,8 +308,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
 
 /* ── CONTAINER QUERY: NARROW / MOBILE VIEW (<520px Container Width) ── */
 @container app-container (max-width: 520px){
-  .screen{height:auto;min-height:100vh;max-height:none;overflow:visible;}
-  #cover{overflow:visible;}
   .work-outer{overflow:visible;flex:none;}
   .work-inner{padding:0 16px 0;}
   #intro .work-inner{padding-top:0;}
@@ -374,7 +360,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
   .ev-year{font-size:22px;}
   .ev-title{font-size:16px;}
   .ev-rule{margin:6px 0 8px;}
-  .ev-desc{font-size:13px;line-height:1.55;}
+  .ev-desc{font-size:13.5px;line-height:1.55;}
 
   .acc{display:block;margin-top:6px;padding-bottom:20px;}
   .acc-item{position:relative;}
@@ -416,7 +402,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
   }
   .acc-year-lg{font-size:22px;font-weight:800;color:var(--red);line-height:1;margin-bottom:4px;}
   .acc-title-lg{font-size:16px;font-weight:800;color:var(--ink);line-height:1.2;margin-bottom:8px;}
-  .acc-desc{font-size:13px;line-height:1.55;color:var(--ink);}
+  .acc-desc{font-size:13.5px;line-height:1.55;color:var(--ink);}
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -446,7 +432,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
       <button class="btn-start" id="btn-start" aria-label="Start timeline interaction">Start</button>
     </div>
 
-    <!-- Desktop absolute cover art -->
     <div class="cover-art" aria-hidden="true">
       <div class="cover-art-inner">
         <svg class="cover-path" viewBox="0 0 1340 700" preserveAspectRatio="none">
@@ -508,10 +493,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
         </div>
       </div>
 
-      <!-- Mobile accordion inserted here by JS -->
       <div class="acc" id="acc-intro"></div>
 
-      <!-- Desktop horizontal timeline strip -->
       <div class="tl-wrap">
         <div class="tl-scroll">
           <div class="tl-track" id="tl-intro"></div>
@@ -555,10 +538,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
         </div>
       </div>
 
-      <!-- Mobile accordion inserted here by JS -->
       <div class="acc" id="acc-event"></div>
 
-      <!-- Desktop horizontal timeline strip -->
       <div class="tl-wrap">
         <div class="tl-scroll">
           <div class="tl-track" id="tl-event"></div>
@@ -680,6 +661,8 @@ function showScreen(id){
       document.querySelectorAll('#cover .thumb').forEach(t => t.classList.add('show'));
     }, 150);
   }
+
+  notifyMoodleHeight();
 }
 
 /* ── Build Horizontal Timeline Strips ── */
@@ -789,11 +772,9 @@ function toggleAccordionItem(accContainerId, evId){
     visited.add(evId);
     activeId = evId;
     updateTimelineState();
-
-    setTimeout(() => {
-      targetItem.scrollIntoView({ behavior:'smooth', block:'start' });
-    }, 100);
   }
+
+  setTimeout(notifyMoodleHeight, 120);
 }
 
 /* ── Go To Event ── */
@@ -804,7 +785,6 @@ function goToEvent(evId){
   activeId = evId;
   visited.add(evId);
 
-  // Use container width rather than window width to check layout state
   const isNarrow = document.body.clientWidth <= 520;
 
   if(!isNarrow){
@@ -820,9 +800,6 @@ function goToEvent(evId){
       showScreen('event');
       updateTimelineState();
       body.style.opacity = '1';
-
-      const outer = document.querySelector('#event .work-outer');
-      if(outer) outer.scrollTop = 0;
     }, 120);
   } else {
     showScreen('intro');
@@ -850,6 +827,39 @@ function resetAll(){
   showScreen('cover');
 }
 
+/* ── PostMessage Resizer for Moodle Footer Script ── */
+function notifyMoodleHeight() {
+  const activeScreen = document.querySelector('.screen.is-active');
+  if (!activeScreen) return;
+
+  // Calculate full height required by screen content
+  const height = activeScreen.scrollHeight;
+
+  // Send exact format expected by Moodle interactive script
+  window.parent.postMessage({
+    type: 'resize',
+    app: 'ce-interactive',
+    height: height
+  }, '*');
+}
+
+/* ── Observer for Window & Drawer Width Changes ── */
+function setupResizeObserver() {
+  const ro = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      const width = entry.contentRect.width;
+
+      // Auto-switch between desktop view and mobile accordion view as Moodle drawers expand/collapse
+      if (width > 520 && activeId && document.getElementById('intro').classList.contains('is-active')) {
+        goToEvent(activeId);
+      }
+      notifyMoodleHeight();
+    }
+  });
+
+  ro.observe(document.body);
+}
+
 /* ── Modal Controls ── */
 function setupBibModal(){
   const overlay = document.getElementById('bib-overlay');
@@ -859,18 +869,26 @@ function setupBibModal(){
     btn.addEventListener('click', () => {
       overlay.classList.add('open');
       closeBtn.focus();
+      notifyMoodleHeight();
     });
   });
 
-  closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('open');
+    notifyMoodleHeight();
+  });
 
   overlay.addEventListener('click', e => {
-    if(e.target === overlay) overlay.classList.remove('open');
+    if(e.target === overlay) {
+      overlay.classList.remove('open');
+      notifyMoodleHeight();
+    }
   });
 
   document.addEventListener('keydown', e => {
     if(e.key === 'Escape' && overlay.classList.contains('open')){
       overlay.classList.remove('open');
+      notifyMoodleHeight();
     }
   });
 }
@@ -885,6 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildAccordions();
 
   setupBibModal();
+  setupResizeObserver();
 
   document.getElementById('btn-start').addEventListener('click', () => {
     showScreen('intro');
